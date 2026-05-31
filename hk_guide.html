@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>香港快閃導覽</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: rgba(255,255,255,0.08);
+    --text: #f0ece4;
+    --muted: #888;
+    --accent: #e8c87a;
+    --accent2: #7ab8e8;
+    --red: #e87a7a;
+    --green: #7ae8a8;
+    --tag-food: rgba(232,138,122,0.15);
+    --tag-food-t: #e88a7a;
+    --tag-shop: rgba(122,184,232,0.15);
+    --tag-shop-t: #7ab8e8;
+    --tag-sight: rgba(122,232,168,0.15);
+    --tag-sight-t: #7ae8a8;
+    --tag-cafe: rgba(232,200,122,0.15);
+    --tag-cafe-t: #e8c87a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,15,15,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid var(--border);
+    padding: 14px 16px 10px;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .title { font-size: 18px; font-weight: 700; letter-spacing: 0.02em; }
+  .title span { color: var(--accent); }
+
+  .hotel-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .hotel-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent2); flex-shrink: 0; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 6px 16px;
+    border-radius: 999px;
+    border: 0.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: 'Noto Sans TC', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab.active {
+    background: var(--accent);
+    color: #0f0f0f;
+    border-color: transparent;
+    font-weight: 700;
+  }
+
+  /* Content */
+  .content { padding: 16px; padding-bottom: 40px; }
+
+  /* Section */
+  .section { margin-bottom: 28px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .section-area {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .metro-tag {
+    font-size: 11px;
+    background: rgba(122,184,232,0.12);
+    color: var(--accent2);
+    border-radius: 4px;
+    padding: 2px 8px;
+    border: 0.5px solid rgba(122,184,232,0.2);
+  }
+
+  /* Cards grid */
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    transition: transform 0.15s, background 0.15s;
+    -webkit-user-select: none;
+  }
+  .card:active { transform: scale(0.97); background: var(--surface2); }
+
+  .card-badge {
+    display: inline-block;
+    font-size: 10px;
+    border-radius: 4px;
+    padding: 2px 7px;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .badge-food { background: var(--tag-food); color: var(--tag-food-t); }
+  .badge-shop { background: var(--tag-shop); color: var(--tag-shop-t); }
+  .badge-sight { background: var(--tag-sight); color: var(--tag-sight-t); }
+  .badge-cafe { background: var(--tag-cafe); color: var(--tag-cafe-t); }
+  .badge-default { background: rgba(255,255,255,0.07); color: var(--muted); }
+
+  .card-name { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.3; }
+  .card-note { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+
+  /* Ranked list */
+  .ranked-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .ranked-controls label { font-size: 13px; color: var(--muted); }
+  .ranked-controls select {
+    background: var(--surface);
+    color: var(--text);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-family: 'Noto Sans TC', sans-serif;
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .rank-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .rank-item {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background 0.15s;
+  }
+  .rank-item:active { background: var(--surface2); }
+
+  .rank-num {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    min-width: 28px;
+    text-align: center;
+  }
+  .rank-num.top3 { color: var(--accent); font-size: 15px; }
+
+  .rank-info { flex: 1; min-width: 0; }
+  .rank-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .rank-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .rank-stars { color: var(--accent); letter-spacing: -1px; }
+
+  .rank-right { text-align: right; flex-shrink: 0; }
+  .rank-price { font-size: 14px; font-weight: 700; color: var(--text); }
+  .rank-unit { font-size: 10px; color: var(--muted); }
+
+  .ranked-footer {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border-radius: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+    border: 0.5px solid var(--border);
+  }
+  .ranked-footer strong { color: var(--accent); }
+
+  /* Tips section */
+  .tips-list { display: flex; flex-direction: column; gap: 8px; }
+  .tip-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .tip-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .tip-content {}
+  .tip-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .tip-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .tip-highlight { color: var(--accent); font-weight: 500; }
+
+  /* Empty */
+  .empty { text-align: center; color: var(--muted); padding: 2rem 0; font-size: 14px; }
+
+  /* Divider */
+  .divider { height: 0.5px; background: var(--border); margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="title">香港 <span>快閃</span> 導覽</div>
+    <div class="hotel-pill">
+      <div class="dot"></div>
+      <span>尖沙咀 九龍酒店</span>
+    </div>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="all">全部</button>
+    <button class="tab" data-tab="尖沙咀">尖沙咀</button>
+    <button class="tab" data-tab="中環">中環</button>
+    <button class="tab" data-tab="銅鑼灣">銅鑼灣</button>
+    <button class="tab" data-tab="佐敦">佐敦</button>
+    <button class="tab" data-tab="油麻地">油麻地</button>
+    <button class="tab" data-tab="堅尼地城">堅尼地城</button>
+    <button class="tab" data-tab="宋皇台">宋皇台</button>
+    <button class="tab" data-tab="ranked">⭐ 評價榜</button>
+    <button class="tab" data-tab="tips">📝 小提示</button>
+  </div>
+</div>
+
+<div class="content" id="content"></div>
+
+<script>
+const areas = [
+  { area:"尖沙咀", metro:"尖沙咀站", items:[
+    { type:"sight", label:"景點", name:"維多利亞港", note:"夜景必去，從酒店步行可達" },
+    { type:"sight", label:"景點", name:"海港城購物中心", note:"購物＋吹冷氣" },
+    { type:"food", label:"美食", name:"Shack Shake", note:"" },
+    { type:"food", label:"美食", name:"九爺牛", note:"" },
+    { type:"food", label:"美食", name:"媽咪雞蛋仔", note:"" },
+    { type:"food", label:"美食", name:"華嫂冰室", note:"菠蘿包超好吃" },
+    { type:"food", label:"美食", name:"旺記冰室", note:"" },
+    { type:"cafe", label:"飲品", name:"紅茶冰室", note:"" },
+    { type:"cafe", label:"甜點", name:"Bakehouse 蛋撻", note:"" },
+    { type:"cafe", label:"甜點", name:"Hashtag 蛋塔", note:"" },
+    { type:"cafe", label:"甜點", name:"泰昌蛋塔", note:"" },
+    { type:"food", label:"美食", name:"一樂燒鵝", note:"要排隊，沾醬必點" },
+    { type:"food", label:"美食", name:"肥姊小吃", note:"" },
+  ]},
+  { area:"中環", metro:"中環站", items:[
+    { type:"sight", label:"景點", name:"太平山", note:"夜景必拍" },
+    { type:"sight", label:"景點", name:"蘭桂坊", note:"夜生活" },
+    { type:"sight", label:"景點", name:"摩天輪", note:"" },
+    { type:"sight", label:"景點", name:"半山腰手扶梯", note:"全球最長戶外電梯" },
+    { type:"cafe", label:"甜點", name:"Bakehouse 蛋撻", note:"" },
+    { type:"food", label:"美食", name:"陸羽茶室", note:"" },
+    { type:"food", label:"美食", name:"九記牛腩", note:"" },
+    { type:"food", label:"美食", name:"永合成煲仔飯", note:"" },
+    { type:"cafe", label:"飲品", name:"蘭芳園", note:"" },
+    { type:"food", label:"美食", name:"正斗粥麵", note:"" },
+    { type:"food", label:"美食", name:"勝香園", note:"" },
+    { type:"food", label:"美食", name:"唐宮小聚", note:"" },
+    { type:"food", label:"美食", name:"生記粥品", note:"" },
+  ]},
+  { area:"銅鑼灣", metro:"銅鑼灣站", items:[
+    { type:"shop", label:"購物", name:"白沙道", note:"Carhartt / Patagonia / Stussy / Hide and Seek / Sense — 約 2h" },
+    { type:"shop", label:"購物", name:"百德新街", note:"O.N.S kapok / GENERAL PURPOSE / Husky / KURA CHIKA — 約 1h，三雙球鞋只要 5000 港！" },
+    { type:"cafe", label:"飲品", name:"吃茶三千", note:"" },
+    { type:"food", label:"美食", name:"媽媽咪雞蛋仔", note:"" },
+    { type:"cafe", label:"甜點", name:"Shari 刨冰", note:"" },
+    { type:"food", label:"美食", name:"肥姐", note:"" },
+    { type:"food", label:"美食", name:"Patato Corner", note:"" },
+    { type:"food", label:"美食", name:"聚點坊", note:"" },
+    { type:"food", label:"美食", name:"榮記粉麵", note:"" },
+  ]},
+  { area:"佐敦", metro:"佐敦站", items:[
+    { type:"food", label:"美食", name:"麥文記", note:"" },
+    { type:"food", label:"美食", name:"澳洲牛奶公司", note:"排隊，翻桌快，牛腩飯＋菠蘿包必點" },
+    { type:"cafe", label:"甜品", name:"佳佳甜品", note:"" },
+    { type:"food", label:"美食", name:"義順牛奶公司", note:"" },
+    { type:"food", label:"美食", name:"十八座狗仔粉", note:"" },
+    { type:"sight", label:"景點", name:"廟街", note:"夜市氣氛" },
+    { type:"food", label:"美食", name:"祥興記上海生煎包", note:"底部焦脆，超好吃" },
+    { type:"food", label:"美食", name:"甘牌燒鵝", note:"要排隊，沾醬必點" },
+    { type:"cafe", label:"茶餐廳", name:"祥興咖啡室", note:"牛腩飯＋菠蘿包，蛋撻也不錯" },
+    { type:"food", label:"美食", name:"華姐清湯腩", note:"微辣，超級入味，獲多項獎項" },
+    { type:"cafe", label:"甜點", name:"Vission Bakery", note:"有名蛋塔，嚐鮮就好" },
+    { type:"cafe", label:"飲品", name:"LINLEE 手打檸檬茶", note:"鴨屎香檸檬茶必喝！！" },
+    { type:"cafe", label:"飲品", name:"炳記茶檔", note:"雞翅好吃，絲襪奶茶也讚" },
+  ]},
+  { area:"油麻地", metro:"油麻地站", items:[
+    { type:"food", label:"美食", name:"興記煲仔飯", note:"" },
+    { type:"cafe", label:"飲品", name:"紅茶冰室", note:"" },
+    { type:"cafe", label:"甜點", name:"嘉多娜餅屋", note:"" },
+    { type:"food", label:"美食", name:"橘底辣蟹", note:"" },
+  ]},
+  { area:"堅尼地城", metro:"堅尼地城站（港島線終點）", items:[
+    { type:"cafe", label:"咖啡", name:"% Arabica", note:"網紅咖啡廳" },
+    { type:"food", label:"美食", name:"嚐醋煲仔小菜", note:"" },
+  ]},
+  { area:"宋皇台", metro:"宋皇台站（屯馬線）", items:[
+    { type:"cafe", label:"甜品", name:"地茂甜品", note:"楊枝甘露＋糖不甩，D3出口 ⭐最強推薦" },
+  ]},
+];
+
+const ranked = [
+  { rank:1, name:"甘牌燒鵝", stars:5, price:465, note:"排隊，沾醬必點" },
+  { rank:2, name:"麥文記", stars:5, price:97, note:"" },
+  { rank:3, name:"一點心", stars:5, price:179, note:"" },
+  { rank:4, name:"紅茶冰室", stars:5, price:157, note:"" },
+  { rank:5, name:"金華冰廳", stars:4, price:161, note:"" },
+  { rank:6, name:"佳佳甜品", stars:5, price:63, note:"" },
+  { rank:7, name:"翠河-湯泡飯", stars:4, price:60, note:"" },
+  { rank:8, name:"十八座狗仔粉", stars:4, price:98, note:"" },
+  { rank:9, name:"竹家莊", stars:3, price:189, note:"" },
+  { rank:10, name:"佐敦串烤", stars:4, price:143, note:"" },
+  { rank:11, name:"澳洲牛奶公司", stars:3, price:49, note:"排隊，翻桌快" },
+  { rank:12, name:"九龍冰室-冰火波蘿油", stars:3, price:16, note:"" },
+  { rank:13, name:"翠苑甜品", stars:3, price:54, note:"" },
+  { rank:14, name:"新華茶餐廳-蛋撻", stars:4, price:19, note:"" },
+  { rank:15, name:"越成河粉", stars:4, price:139, note:"" },
+  { rank:16, name:"祺哥燒鵝", stars:4, price:150, note:"" },
+  { rank:17, name:"Bakehouse 蛋撻", stars:5, price:118, note:"建議要冰過" },
+  { rank:18, name:"大中華", stars:3, price:281, note:"" },
+  { rank:19, name:"地茂館", stars:4, price:44, note:"楊枝甘露必點" },
+  { rank:20, name:"羅粉世家", stars:4, price:182, note:"" },
+  { rank:21, name:"Shake Shack", stars:3, price:196, note:"" },
+];
+
+const tips = [
+  { icon:"🚇", title:"從九龍酒店出發", text:"地鐵<span class='tip-highlight'>尖沙咀站</span>步行約 2 分鐘。荃灣線（紅）轉港島線（藍）可去中環、堅尼地城；屯馬線（深紅）可去宋皇台。" },
+  { icon:"💳", title:"交通卡：八達通", text:"第一件事去地鐵站買<span class='tip-highlight'>八達通</span>（Octopus Card），搭地鐵、巴士、便利店都能刷，省去每次買票的麻煩。" },
+  { icon:"📱", title:"eSIM 上網", text:"出發前買好 eSIM，推薦 <span class='tip-highlight'>Klook 3天方案</span>（NT$180起）或 <span class='tip-highlight'>OKB eSIM 吃到飽</span>（NT$479/5天）。掃 QR Code 就能啟用，不用換實體卡。" },
+  { icon:"⏰", title:"排隊心法", text:"熱門店（甘牌燒鵝、澳洲牛奶公司、LINLEE）<span class='tip-highlight'>避開午餐12-14點、晚餐18-20點</span>，提早或錯峰去等待時間少很多。" },
+  { icon:"🦆", title:"必喝：鴨屎香檸檬茶", text:"LINLEE 手打檸檬茶，<span class='tip-highlight'>「鴨屎香」是茶葉品種名稱</span>，不是真的鴨屎味，香氣特別、茶感足，超好喝。" },
+  { icon:"🔴", title:"可跳過", text:"<span class='tip-highlight'>一樂燒鵝、鑽記酒家</span> 被評為「貴又普通」，時間有限可以跳過，把位置留給甘牌或祺哥燒鵝。" },
+  { icon:"💰", title:"預算參考", text:"21 間店 6 天共花 <span class='tip-highlight'>2860 港元 ≈ 11,827 台幣</span>，平均每天約 476 港元。你兩天一夜可以抓 <span class='tip-highlight'>1000-1500 港元</span>的餐飲預算。" },
+  { icon:"🛍️", title:"買球鞋攻略", text:"銅鑼灣<span class='tip-highlight'>百德新街</span>有 Adidas、各潮牌折扣，三雙球鞋只要 5000 港。從銅鑼灣地鐵站步行可達。" },
+];
+
+function badgeClass(type) {
+  const map = { food:'badge-food', shop:'badge-shop', sight:'badge-sight', cafe:'badge-cafe' };
+  return map[type] || 'badge-default';
+}
+
+function starStr(n) {
+  return '★'.repeat(n) + '☆'.repeat(5-n);
+}
+
+let currentSort = 'rank';
+
+function renderArea(tab) {
+  const list = tab === 'all' ? areas : areas.filter(a => a.area === tab);
+  if (!list.length) { document.getElementById('content').innerHTML = '<div class="empty">沒有資料</div>'; return; }
+  document.getElementById('content').innerHTML = list.map(s => `
+    <div class="section">
+      <div class="section-header">
+        <div class="section-area">${s.area}</div>
+        <div class="metro-tag">地鐵 ${s.metro}</div>
+      </div>
+      <div class="cards">
+        ${s.items.map(item => `
+          <div class="card">
+            <div class="card-badge ${badgeClass(item.type)}">${item.label}</div>
+            <div class="card-name">${item.name}</div>
+            ${item.note ? `<div class="card-note">${item.note}</div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderRanked() {
+  let list = [...ranked];
+  if (currentSort === 'stars-desc') list.sort((a,b) => b.stars - a.stars || a.rank - b.rank);
+  else if (currentSort === 'price-asc') list.sort((a,b) => a.price - b.price);
+  else if (currentSort === 'price-desc') list.sort((a,b) => b.price - a.price);
+  else list.sort((a,b) => a.rank - b.rank);
+
+  document.getElementById('content').innerHTML = `
+    <div class="ranked-controls">
+      <label>排序方式</label>
+      <select id="sort-sel">
+        <option value="rank" ${currentSort==='rank'?'selected':''}>依清單順序</option>
+        <option value="stars-desc" ${currentSort==='stars-desc'?'selected':''}>星等高→低</option>
+        <option value="price-asc" ${currentSort==='price-asc'?'selected':''}>價格低→高</option>
+        <option value="price-desc" ${currentSort==='price-desc'?'selected':''}>價格高→低</option>
+      </select>
+    </div>
+    <div class="rank-list">
+      ${list.map(item => `
+        <div class="rank-item">
+          <div class="rank-num ${item.rank <= 3 ? 'top3' : ''}">#${item.rank}</div>
+          <div class="rank-info">
+            <div class="rank-name">${item.name}</div>
+            <div class="rank-sub"><span class="rank-stars">${starStr(item.stars)}</span>${item.note ? ' · '+item.note : ''}</div>
+          </div>
+          <div class="rank-right">
+            <div class="rank-price">${item.price}</div>
+            <div class="rank-unit">港幣</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="ranked-footer">21 間合計 <strong>2860 港元 ≈ 11,827 台幣</strong>（6 天）<br>兩天預算參考：<strong>1000–1500 港元</strong></div>
+  `;
+
+  document.getElementById('sort-sel').addEventListener('change', e => {
+    currentSort = e.target.value;
+    renderRanked();
+  });
+}
+
+function renderTips() {
+  document.getElementById('content').innerHTML = `
+    <div class="tips-list">
+      ${tips.map(t => `
+        <div class="tip-card">
+          <div class="tip-icon">${t.icon}</div>
+          <div class="tip-content">
+            <div class="tip-title">${t.title}</div>
+            <div class="tip-text">${t.text}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+let currentTab = 'all';
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+  if (tab === 'ranked') renderRanked();
+  else if (tab === 'tips') renderTips();
+  else renderArea(tab);
+}
+
+document.getElementById('tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab');
+  if (!btn) return;
+  switchTab(btn.dataset.tab);
+});
+
+switchTab('all');
+</script>
+</body>
+</html>
